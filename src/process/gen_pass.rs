@@ -44,6 +44,7 @@ pub fn process_genpass(
     println!("{}", password);
 
     let result = zxcvbn(&password, &[]);
-    println!("Password strength: {}", result.score());
+    // print the password strength to stderr
+    eprintln!("Password strength: {}", result.score());
     Ok(())
 }
