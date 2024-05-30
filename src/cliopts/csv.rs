@@ -1,40 +1,7 @@
 use clap::Parser;
-use std::{fmt, path::Path, str::FromStr};
+use std::{fmt, str::FromStr};
 
-#[derive(Parser, Debug)]
-#[command(name = "rcli", version, author, about)]
-pub struct Opts {
-    #[command(subcommand)]
-    pub cmd: SubCommand,
-}
-
-#[derive(Parser, Debug)]
-pub enum SubCommand {
-    #[command(name = "csv", about = "Convert CSV to other formats")]
-    Csv(CsvOpts),
-    #[command(name = "genpass", about = "generate a random password")]
-    GenPass(GenPassOpts),
-}
-
-#[derive(Debug, Clone, Copy)]
-pub enum OutputFormat {
-    Json,
-    Yaml,
-}
-
-#[derive(Parser, Debug)]
-pub struct GenPassOpts {
-    #[arg(short, long, default_value_t = 16)]
-    pub length: u8,
-    #[arg(long, default_value_t = false)]
-    pub no_uppercase: bool,
-    #[arg(long, default_value_t = false)]
-    pub no_lowercase: bool,
-    #[arg(long, default_value_t = false)]
-    pub no_numbers: bool,
-    #[arg(long, default_value_t = false)]
-    pub no_symbols: bool,
-}
+use super::verify_file_exists;
 
 #[derive(Parser, Debug)]
 pub struct CsvOpts {
@@ -53,14 +20,10 @@ pub struct CsvOpts {
     pub header: bool,
 }
 
-// We also can return Result<String, &'static str>
-// String literal is static
-fn verify_file_exists(file_name: &str) -> Result<String, String> {
-    if Path::new(file_name).exists() {
-        Ok(file_name.to_string())
-    } else {
-        Err(format!("File not found: {}", file_name))
-    }
+#[derive(Debug, Clone, Copy)]
+pub enum OutputFormat {
+    Json,
+    Yaml,
 }
 
 fn parse_format(format: &str) -> Result<OutputFormat, anyhow::Error> {
